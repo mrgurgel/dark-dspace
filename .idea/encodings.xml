@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/dspace-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-iiif/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-iiif/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-oai/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-oai/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-rdf/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-rdf/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-server-webapp/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-server-webapp/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-services/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-services/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-sword/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-sword/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-swordv2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace-swordv2/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/modules/additions/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/modules/additions/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/modules/server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/modules/server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/modules/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/modules/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dspace/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
