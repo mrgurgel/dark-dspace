@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../dark-dspace-angular/dark-dspace-angular.iml" filepath="$PROJECT_DIR$/../dark-dspace-angular/dark-dspace-angular.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../dark-hyperdrive-mock/dark-hyperdrive-mock.iml" filepath="$PROJECT_DIR$/../dark-hyperdrive-mock/dark-hyperdrive-mock.iml" />
     </modules>
   </component>
 </project>

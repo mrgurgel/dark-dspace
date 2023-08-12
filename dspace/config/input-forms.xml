@@ -1,46 +1,103 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE input-forms
-  SYSTEM "submission-forms.dtd">
-<input-forms><form-definitions><form name="tdpage1"><row><field>
+<?xml version="1.0"?>
+<!DOCTYPE input-forms SYSTEM "input-forms.dtd">
+
+
+<input-forms>
+
+ <!-- The form-map maps collection handles to forms. DSpace does not       -->
+ <!-- require a collection name to be unique, not even within a community. -->
+ <!-- DSpace does however ensure that each collection's handle is unique.  -->
+ <!-- Form-map provides the means to associate a unique collection name    -->
+ <!-- with a form. The form-map also provides the special handle "default" -->
+ <!-- (which is never a collection), here mapped to "traditional". Any     -->
+ <!-- collection which does not appear in this map will be associated with -->
+ <!-- the mapping for handle "default".                                    -->
+
+ <form-map>
+   <name-map collection-handle="default" form-name="td" />
+ <!--   <name-map collection-handle="123/13" form-name="general" />  -->
+
+</form-map>
+
+
+ <!-- The form-definitions map lays out the detailed definition of all the -->
+ <!-- submission forms. Each separate form set has a unique name as an     -->
+ <!-- attribute. This name matches one of the names in the form-map. One   -->
+ <!-- named form set has the name "traditional"; as this name suggests,    -->
+ <!-- it is the old style and is also the default, which gets used when    -->
+ <!-- the specified collection has no correspondingly-named form set.      -->
+ <!--                                                                      -->
+ <!-- Each form set contains an ordered set of pages; each page defines    -->
+ <!-- one submission metadata entry screen. Each page has an ordered list  -->
+ <!-- of field definitions, Each field definition corresponds to one       -->
+ <!-- metatdata entry (a so-called row), which has a DC element name, a    -->
+ <!-- displayed label, a text string prompt which is called a hint, and    -->
+ <!-- an input-type. Each field also may hold optional elements: DC        -->
+ <!-- qualifier name, a repeatable flag, and a text string whose presence  -->
+ <!-- serves as a 'this field is required' flag.                           -->
+
+ <form-definitions>
+
+   <form name="td">
+
+     <page number="1">
+
+	  <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>type</dc-element>
-         <dc-qualifier/>
+         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Tipo de documento:</label>
          <input-type value-pairs-name="common_types">dropdown</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   	   		
+       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>date</dc-element>
          <dc-qualifier>issued</dc-qualifier>
          <repeatable>false</repeatable>
          <label>Data da defesa:</label>
          <input-type>date</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	
+
+      <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>title</dc-element>
-         <dc-qualifier/>
+         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Título:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>title</dc-element>
          <dc-qualifier>alternative</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Título(s) alternativo(s):</label>
          <input-type value-pairs-name="common_languages">dropdown</input-type>
-         <hint/>
-         <required/>
-       </field></row></form><form name="tdpage2"><row><field>
+         <hint></hint>
+         <required></required>
+       </field>   
+
+	</page>
+
+    <page number="2"> 
+	
+		<!-- AUTOR -->
+	
+       <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>creator</dc-element>
-         <dc-qualifier/>
+         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Autor:</label>
          <input-type>name</input-type>
@@ -51,25 +108,33 @@
 		 &lt;font color="red"&gt;CAMPO OBRIGATÓRIO: &lt;/font&gt; Informe o nome do autor, conforme o formato de citação.</hint>
          <required>&lt;font color="red"&gt;&lt;strong&gt;CAMPO OBRIGATÓRIO:&lt;/strong&gt; Informe o nome do AUTOR, conforme o formato de citação.&lt;/font&gt;
 		           &lt;a href="help/submit-help.html#id-autor" tooltiped="" style="float:right;color:black;" href="#" &gt;Exemplos&lt;/a&gt;</required>
-       </field></row><row><field>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>creator</dc-element>
          <dc-qualifier>Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do autor:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>creator</dc-element>
          <dc-qualifier>ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do autor:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+	   
+	   <!-- ORIENTADORES -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor1</dc-qualifier>
@@ -82,25 +147,31 @@
 		       &lt;font color="red"&gt;CAMPO OBRIGATÓRIO: &lt;/font&gt; Informe o nome do primeiro orientador, conforme o formato de citação.</hint>
          <required>&lt;font color="red"&gt;&lt;strong&gt;CAMPO OBRIGATÓRIO:&lt;/strong&gt; Informe o nome do PRIMEIRO ORIENTADOR, conforme o formato de citação.&lt;/font&gt; 
 		           &lt;a href="help/submit-help.html#id-orientador" style="float:right;color:black;" tooltiped="" &gt;Exemplos&lt;/a&gt;</required>
-       </field></row><row><field>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor1Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do primeiro orientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor1ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do primeiro orientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+       
+       	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor2</dc-qualifier>
@@ -111,26 +182,37 @@
 		       &lt;a href="help/submit-help.html#id-orientador" style="float:right" tooltiped="" &gt;Exemplos&lt;/a&gt;
 			   &lt;/div&gt;
 		       &lt;font color="blue"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do segundo orientador, conforme o formato de citação.</hint>
-         <required/>
-        </field></row><row><field>
+         <required></required>
+        </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor2Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do orientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor2ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do orientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row></form><form name="tdpage3"><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+		
+	</page>
+    <page number="3"> 
+	
+	   <!-- PRIMEIRO COORIENTADOR -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor-co1</dc-qualifier>
@@ -141,26 +223,35 @@
 		       &lt;a href="help/submit-help.html#id-coorientador" tooltiped="" style="float:right" href="#" &gt;Exemplos&lt;/a&gt;
 	           &lt;/div&gt;
            	   &lt;font color="#449d44"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do primeiro coorientador, conforme o formato de citação.</hint>
-         <required/>
-       </field></row><row><field>
+         <required></required>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor-co1Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do primeiro coorientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor-co1ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do primeiro coorientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+	   
+	   
+	   <!-- SEGUNDO CO-ORIENTADOR -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor-co2</dc-qualifier>
@@ -171,26 +262,39 @@
 		       &lt;a href="help/submit-help.html#id-coorientador" tooltiped="" style="float:right" href="#" &gt;Exemplos&lt;/a&gt;
                &lt;/div&gt;
 		       &lt;font color="#449d44"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do segundo coorientador, conforme o formato de citação.</hint>
-         <required/>
-       </field></row><row><field>
+         <required></required>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor-co2Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do segundo coorientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>advisor-co2ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do segundo coorientador:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row></form><form name="tdpage4"><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+	
+    </page>
+
+
+    <page number="4"> 
+	   
+	   <!-- PRIMEIRO MEMBRO DA BANCA -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee1</dc-qualifier>
@@ -201,26 +305,35 @@
 			   &lt;a style="float:right" href="help/submit-help.html#id-membros-banca" tooltiped="" &gt;Exemplos&lt;/a&gt;
                &lt;/div&gt;
 		       &lt;font color="#449d44"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do primeiro membro da banca, conforme o formato de citação.</hint>
-         <required/>
-       </field></row><row><field>
+         <required></required>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee1Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do primeiro membro da banca:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee1ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do primeiro membro da banca</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+	   
+
+	   <!-- SEGUNDO MEMBRO DA BANCA -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee2</dc-qualifier>
@@ -232,26 +345,34 @@
 		       &lt;/div&gt;
 		       &lt;font color="#449d44"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do segundo membro da banca, conforme o formato de citação.
 			   </hint>
-         <required/>
-       </field></row><row><field>
+         <required></required>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee2Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do segundo membro da banca:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee2ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do segundo membro da banca</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+	   
+	   <!-- TERCEIRO MEMBRO DA BANCA -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee3</dc-qualifier>
@@ -262,26 +383,34 @@
 		       &lt;a style="float:right" href="help/submit-help.html#id-membros-banca" tooltiped=""&gt;Exemplos&lt;/a&gt;
 		       &lt;/div&gt;
 		       &lt;font color="#449d44"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do segundo membro da banca, conforme o formato de citação.</hint>
-         <required/>
-       </field></row><row><field>
+         <required></required>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee3Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do terceiro membro da banca:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee3ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do terceiro membro da banca</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <!-- QUARTO MEMBRO DA BANCA -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee4</dc-qualifier>
@@ -292,26 +421,34 @@
 		       &lt;a style="float:right" href="help/submit-help.html#id-membros-banca" tooltiped=""&gt;Exemplos&lt;/a&gt;
 		       &lt;/div&gt;
 		       &lt;font color="#449d44"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do quarto membro da banca, conforme o formato de citação.</hint>
-         <required/>
-       </field></row><row><field>
+         <required></required>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee4Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do quarto membro da banca:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>	   
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee4ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do quarto quarto da banca</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <!-- QUINTO MEMBRO DA BANCA -->
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee5</dc-qualifier>
@@ -322,53 +459,72 @@
 		       &lt;a style="float:right" href="help/submit-help.html#id-membros-banca" tooltiped=""&gt;Exemplos&lt;/a&gt;
 		       &lt;/div&gt;
 		       &lt;font color="#449d44"&gt;CAMPO OPCIONAL: &lt;/font&gt; Informe o nome do quinto membro da banca, conforme o formato de citação.</hint>
-         <required/>
-       </field></row><row><field>
+         <required></required>
+       </field>
+
+	    <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee5Lattes</dc-qualifier>
          <repeatable>false</repeatable>
          <label>&lt;a href="http://buscatextual.cnpq.br/buscatextual/busca.do?metodo=apresentar" target="_blank" &gt;URL do Currículo Lattes&lt;/a&gt; do quinto  membro da banca:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
          <dc-qualifier>referee5ID</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Identificador único do quinto quarto da banca</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row></form><form name="tdpage5"><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+
+	</page>
+
+    <page number="5"> 
+	   
+
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>publisher</dc-element>
-         <dc-qualifier/>
+         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Nome da instituição por extenso:</label>
 		 <input-type value-pairs-name="common_ies">dropdown</input-type>
-         <hint/>
-		 <required/>
-       </field></row><row><field>
+         <hint></hint>
+		 <required></required>
+       </field>
+
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>publisher</dc-element>
          <dc-qualifier>initials</dc-qualifier>
          <repeatable>false</repeatable>
          <label>Sigla da instituição:</label>
 		 <input-type value-pairs-name="common_sigla_ies">dropdown</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+   
+
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>publisher</dc-element>
          <dc-qualifier>department</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Faculdade, Instituto ou Departamento:</label>
          <input-type value-pairs-name="common_publisher_department">dropdown</input-type> 
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+
+
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>publisher</dc-element>
          <dc-qualifier>program</dc-qualifier>
@@ -376,38 +532,48 @@
          <label>Nome(s) do(s) programa(s) de pós-graduação por extenso:</label>
          <input-type value-pairs-name="common_publisher_programs">dropdown</input-type> 
 		 <!-- &lt;br&gt;&lt;font color="red"&gt;Mantenha a tecla&lt;/font&gt;  &lt;code&gt;"Ctrl"&lt;/code&gt;  &lt;font color="red"&gt;pressionada para selecionar mais de um valor. &lt;/font&gt; -->
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   
+	   <field>
 		 <dc-schema>dc</dc-schema>
          <dc-element>publisher</dc-element>
          <dc-qualifier>country</dc-qualifier>
          <repeatable>false</repeatable>
          <label>País:</label>
 		 <!-- <input-type>onebox</input-type> -->
-          <input-type value-pairs-name="common_publisher_country">dropdown</input-type> --&gt;
-         <hint/>
-         <required/>
-       </field></row><row><field>
+          <input-type value-pairs-name="common_publisher_country">dropdown</input-type> -->
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>language</dc-element>
-         <dc-qualifier/>
+         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Idioma:</label>
 		 <!-- <input-type>onebox</input-type> -->
          <input-type value-pairs-name="common_languages">dropdown</input-type> 
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	      
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>relation</dc-element>
          <dc-qualifier>references</dc-qualifier>
          <repeatable>false</repeatable>
          <label>Referências:</label>
          <input-type>textarea</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   	   
+	   
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>identifier</dc-element>
          <dc-qualifier>doi</dc-qualifier>
@@ -415,19 +581,28 @@
          <repeatable>false</repeatable>
          <label>Identificador persistente:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row></form><form name="tdpage6"><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	 
+	 
+	   </page>
+	   
+	   <page number="6">  
+	   
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>subject</dc-element>
-         <dc-qualifier/>
+         <dc-qualifier></dc-qualifier>
          <!-- An input-type of twobox MUST be marked as repeatable -->
          <repeatable>true</repeatable>
          <label>Palavras-chave:</label>
          <input-type value-pairs-name="common_languages">dropdown</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+	  <field>
          <dc-schema>dc</dc-schema>
          <dc-element>subject</dc-element>
          <dc-qualifier>cnpq</dc-qualifier>
@@ -437,54 +612,107 @@
 		 <!-- <vocabulary>cnpq</vocabulary>  -->
 		 <!-- <vocabulary closed="true">cnpq</vocabulary> -->
 		  <input-type>onebox</input-type> 
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	 
+	 
+	<field>
          <dc-schema>dc</dc-schema>
          <dc-element>description</dc-element>
          <dc-qualifier>resumo</dc-qualifier>
          <repeatable>false</repeatable>
          <label>Resumo:</label>
          <input-type>textarea</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+	       
+      <field>
          <dc-schema>dc</dc-schema>
          <dc-element>description</dc-element>
          <dc-qualifier>abstract</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Abstract:</label>
          <input-type value-pairs-name="common_languages">qualdrop_textarea_language</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>  
+
+			
+       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>description</dc-element>
          <dc-qualifier>sponsorship</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Agência(s) de &lt;br&gt; fomento:</label>
          <input-type>onebox</input-type>
-         <hint/>
-         <required/>
-       </field></row><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	   
+      
+	   <field>
          <dc-schema>dc</dc-schema>
          <dc-element>relation</dc-element>
-         <dc-qualifier/>
+         <dc-qualifier></dc-qualifier>
          <repeatable>true</repeatable>
          <label>Relação:</label>
          <input-type>textarea</input-type>
-         <hint/>
-         <required/>
-       </field></row></form><form name="tdpage7"><row><field>
+         <hint></hint>
+         <required></required>
+       </field>
+	</page>
+	
+	<page number="7">
+
+
+	<!--
+	  <field>
+		 <dc-schema>dc</dc-schema>
+         <dc-element>date</dc-element>
+         <dc-qualifier>available</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Data de liberação para acesso:</label>
+         <input-type>date</input-type>
+         <hint></hint>
+         <required></required>
+      </field> -->
+	   
+	   	<field>
          <dc-schema>dc</dc-schema>
          <dc-element>identifier</dc-element>
          <dc-qualifier>citation</dc-qualifier>
          <repeatable>false</repeatable>
          <label>Citação:</label>
          <input-type>textarea</input-type>
-         <hint/>
-         <required/>
-       </field></row></form><form name="bitstream-metadata"><row><field><dc-schema>dc</dc-schema><dc-element>title</dc-element><dc-qualifier/><repeatable>false</repeatable><label>Title</label><input-type>onebox</input-type><hint>Enter the name of the file.</hint><required>You must enter a main title for this item.</required></field></row><row><field><dc-schema>dc</dc-schema><dc-element>description</dc-element><repeatable>true</repeatable><label>Description</label><input-type>textarea</input-type><hint>Enter a description for the file</hint><required/></field></row></form></form-definitions><form-value-pairs>
+         <hint></hint>
+         <required></required>
+       </field>
+
+    </page>
+	   
+   </form>
+	
+ </form-definitions>
+
+
+ <!-- form-value-pairs populate dropdown and qualdrop-value lists.          -->
+ <!-- The form-value-pairs element holds child elements named 'value-pairs' -->
+ <!-- A 'value-pairs' element has a value-pairs-name and a dc-term          -->
+ <!-- attribute. The dc-term attribute specifies which to which Dublin Core -->
+ <!-- Term this set of value-pairs applies.                                 -->
+ <!--     Current dc-terms are: identifier-pairs, type-pairs, and           -->
+ <!--     language_iso-pairs. The name attribute matches a name             -->
+ <!--     in the form-map, above.                                           -->
+ <!-- A value-pair contains one 'pair' for each value displayed in the list -->
+ <!-- Each pair contains a 'displayed-value' element and a 'stored-value'   -->
+ <!-- element. A UI list displays the displayed-values, but the program     -->
+ <!-- stores the associated stored-values in the database.                  -->
+
+
+
+ <form-value-pairs>
 
    <value-pairs value-pairs-name="common_rights" dc-term="rights">
      <pair>
@@ -2041,4 +2269,7 @@
 	<pair><displayed-value>ZOOTECNIA::PRODUCAO ANIMAL</displayed-value><stored-value>CIENCIAS AGRARIAS::ZOOTECNIA::PRODUCAO ANIMAL</stored-value></pair>
   </value-pairs>
 
-</form-value-pairs></input-forms>
+</form-value-pairs>
+
+
+</input-forms>
