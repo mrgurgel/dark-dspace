@@ -23,7 +23,7 @@
     <!-- DO NOT CHANGE ANYTHING BELOW THIS LINE EXCEPT YOU REALLY KNOW WHAT YOU ARE DOING! -->
     
     <!-- We need the prefix to determine DOIs that were minted by ourself. -->
-    <xsl:param name="prefix">10.5072/dspace-</xsl:param>
+    <xsl:param name="prefix">10.5072</xsl:param>
     <!-- The content of the following parameter will be used as element publisher. -->
     <xsl:param name="publisher">My University</xsl:param>
     <!-- The content of the following variable will be used as element contributor with contributorType datamanager. -->
