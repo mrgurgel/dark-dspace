@@ -467,7 +467,7 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
             throw new RuntimeException(sqle);
         }
 
-        doiRow.setStatus(IS_REGISTERED);
+        doiRow.setRegistered();
         doiService.update(context, doiRow);
     }
 
@@ -978,6 +978,9 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
                     if (dso.getID().equals(doi.getDSpaceObject().getID())) {
                         // Before we return this, check the filter
                         checkMintable(context, filter, dso);
+                        if(doi.getStatus() >= 100) {
+                            return new Dark(doi, context);
+                        }
                         return doi;
                     } else {
                         throw new DOIIdentifierException("Trying to create a DOI " +

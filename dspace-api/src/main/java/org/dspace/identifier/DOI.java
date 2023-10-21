@@ -106,4 +106,24 @@ public class DOI
     public void setStatus(Integer status) {
         this.status = status;
     }
+
+    public void setToBeRegistered() {
+        setStatus(DOIIdentifierProvider.TO_BE_REGISTERED);
+    }
+
+    public boolean isRegistered() {
+        return DOIIdentifierProvider.IS_REGISTERED.equals(getStatus());
+    }
+
+    public boolean isDeleted() {
+        return DOIIdentifierProvider.DELETED.equals(getStatus());
+    }
+
+    public boolean isToBeDeleted() {
+        return DOIIdentifierProvider.TO_BE_DELETED.equals(getStatus());
+    }
+
+    public void setRegistered() {
+        setStatus(DOIIdentifierProvider.IS_REGISTERED);
+    }
 }

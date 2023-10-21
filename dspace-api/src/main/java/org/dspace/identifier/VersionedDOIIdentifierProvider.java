@@ -205,14 +205,15 @@ public class VersionedDOIIdentifierProvider extends DOIIdentifierProvider implem
             throw new RuntimeException("Error in database connection.", ex);
         }
 
-        if (DELETED.equals(doi.getStatus()) ||
-            TO_BE_DELETED.equals(doi.getStatus())) {
+
+        if (doi.isDeleted() ||
+                doi.isToBeDeleted()) {
             throw new DOIIdentifierException("You tried to register a DOI that "
                                                  + "is marked as DELETED.", DOIIdentifierException.DOI_IS_DELETED);
         }
 
         // Check status of DOI
-        if (IS_REGISTERED.equals(doi.getStatus())) {
+        if (doi.isRegistered()) {
             return;
         }
 
@@ -229,7 +230,7 @@ public class VersionedDOIIdentifierProvider extends DOIIdentifierProvider implem
         }
 
         // change status of DOI
-        doi.setStatus(TO_BE_REGISTERED);
+        doi.setToBeRegistered();
         try {
             doiService.update(context, doi);
         } catch (SQLException ex) {
