@@ -57,6 +57,31 @@ import org.dspace.utils.DSpace;
 public class DOIOrganiser {
 
     private static final Logger LOG = LogManager.getLogger(DOIOrganiser.class);
+
+    private static final Integer TO_BE_REGISTERED = 1;
+    // The DOI is queued for reservation with the service provider
+    private static final Integer TO_BE_RESERVED = 2;
+    // The DOI has been registered online
+    private static final Integer IS_REGISTERED = 3;
+    // The DOI has been reserved online
+    private static final Integer IS_RESERVED = 4;
+    // The DOI is reserved and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_RESERVED = 5;
+    // The DOI is registered and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_REGISTERED = 6;
+    // The DOI metadata record should be updated before performing online registration
+    private static final Integer UPDATE_BEFORE_REGISTRATION = 7;
+    // The DOI will be deleted locally and marked as deleted in the DOI service provider
+    private static final Integer TO_BE_DELETED = 8;
+    // The DOI has been deleted and is no longer associated with an item
+    private static final Integer DELETED = 9;
+    // The DOI is created in the database and is waiting for either successful filter check on item install or
+    // manual intervention by an administrator to proceed to reservation or registration
+    private static final Integer PENDING = 10;
+    // The DOI is created in the database, but no more context is known
+    private static final Integer MINTED = 11;
+
+
     public static final int START_RANGE_DARK_STATUS = 100;
 
     private final DOIIdentifierProvider provider;
@@ -201,21 +226,21 @@ public class DOIOrganiser {
         }
 
         if (line.hasOption('l')) {
-            organiser.list("reservation", null, null, "DOIs", DOIIdentifierProvider.TO_BE_RESERVED);
-            organiser.list("registration", null, null, "DOIs", DOIIdentifierProvider.TO_BE_REGISTERED);
+            organiser.list("reservation", null, null, "DOIs", TO_BE_RESERVED);
+            organiser.list("registration", null, null, "DOIs", TO_BE_REGISTERED);
             organiser.list("update", null, null, "DOIs",
-                    DOIIdentifierProvider.UPDATE_BEFORE_REGISTRATION,
-                    DOIIdentifierProvider.UPDATE_REGISTERED,
-                    DOIIdentifierProvider.UPDATE_RESERVED);
-            organiser.list("deletion", null, null, "DOIs", DOIIdentifierProvider.TO_BE_DELETED);
+                    UPDATE_BEFORE_REGISTRATION,
+                    UPDATE_REGISTERED,
+                    UPDATE_RESERVED);
+            organiser.list("deletion", null, null, "DOIs", TO_BE_DELETED);
 
-            organiser.list("reservation", null, null, "dARKs", DOIIdentifierProvider.TO_BE_RESERVED + START_RANGE_DARK_STATUS);
-            organiser.list("registration", null, null, "dARKs", DOIIdentifierProvider.TO_BE_REGISTERED + START_RANGE_DARK_STATUS);
+            organiser.list("reservation", null, null, "dARKs", TO_BE_RESERVED + START_RANGE_DARK_STATUS);
+            organiser.list("registration", null, null, "dARKs", TO_BE_REGISTERED + START_RANGE_DARK_STATUS);
             organiser.list("update", null, null, "dARKs",
-                    DOIIdentifierProvider.UPDATE_BEFORE_REGISTRATION + START_RANGE_DARK_STATUS,
-                    DOIIdentifierProvider.UPDATE_REGISTERED + START_RANGE_DARK_STATUS,
-                    DOIIdentifierProvider.UPDATE_RESERVED + START_RANGE_DARK_STATUS);
-            organiser.list("deletion", null, null, "dARKs", DOIIdentifierProvider.TO_BE_DELETED + START_RANGE_DARK_STATUS);
+                    UPDATE_BEFORE_REGISTRATION + START_RANGE_DARK_STATUS,
+                    UPDATE_REGISTERED + START_RANGE_DARK_STATUS,
+                    UPDATE_RESERVED + START_RANGE_DARK_STATUS);
+            organiser.list("deletion", null, null, "dARKs", TO_BE_DELETED + START_RANGE_DARK_STATUS);
 
         }
 
@@ -231,7 +256,7 @@ public class DOIOrganiser {
         if (line.hasOption('s')) {
             try {
                 List<DOI> dois = doiService
-                        .getDOIsByStatus(context, Arrays.asList(DOIIdentifierProvider.TO_BE_RESERVED));
+                        .getDOIsByStatus(context, Arrays.asList(TO_BE_RESERVED));
                 if (dois.isEmpty()) {
                     System.err.println("There are no objects in the database "
                             + "that could be reserved.");
@@ -250,7 +275,7 @@ public class DOIOrganiser {
         if (line.hasOption('r')) {
             try {
                 List<DOI> dois = doiService
-                        .getDOIsByStatus(context, Arrays.asList(DOIIdentifierProvider.TO_BE_REGISTERED));
+                        .getDOIsByStatus(context, Arrays.asList(TO_BE_REGISTERED));
                 if (dois.isEmpty()) {
                     System.err.println("There are no objects in the database "
                             + "that could be registered.");
@@ -262,12 +287,12 @@ public class DOIOrganiser {
 
 
                 List<DOI> darks = doiService
-                        .getDOIsByStatus(context, Arrays.asList(DOIIdentifierProvider.TO_BE_REGISTERED + START_RANGE_DARK_STATUS));
+                        .getDOIsByStatus(context, Arrays.asList(TO_BE_REGISTERED + START_RANGE_DARK_STATUS));
                 if (darks.isEmpty()) {
                     System.err.println("There are no objects in the database that could be registered.");
                 }
                 for (DOI doi : darks) {
-                    organiser.registerDarkBody(doi);
+                    organiser.register(doi);
                     context.uncacheEntity(doi);
                 }
 
@@ -282,9 +307,9 @@ public class DOIOrganiser {
         if (line.hasOption('u')) {
             try {
                 List<DOI> dois = doiService.getDOIsByStatus(context, Arrays.asList(
-                        DOIIdentifierProvider.UPDATE_BEFORE_REGISTRATION,
-                        DOIIdentifierProvider.UPDATE_RESERVED,
-                        DOIIdentifierProvider.UPDATE_REGISTERED));
+                        UPDATE_BEFORE_REGISTRATION,
+                        UPDATE_RESERVED,
+                        UPDATE_REGISTERED));
                 if (dois.isEmpty()) {
                     System.err.println("There are no objects in the database "
                             + "whose metadata needs an update.");
@@ -303,7 +328,7 @@ public class DOIOrganiser {
         if (line.hasOption('d')) {
             try {
                 List<DOI> dois = doiService
-                        .getDOIsByStatus(context, Arrays.asList(DOIIdentifierProvider.TO_BE_DELETED));
+                        .getDOIsByStatus(context, Arrays.asList(TO_BE_DELETED));
                 if (dois.isEmpty()) {
                     System.err.println("There are no objects in the database "
                             + "that could be deleted.");
@@ -383,10 +408,6 @@ public class DOIOrganiser {
 
     }
 
-    private void registerDarkBody(DOI doi) {
-
-
-    }
 
     /**
      * list DOIs queued for reservation or registration
@@ -413,7 +434,7 @@ public class DOIOrganiser {
                 out.println("There are no " + identifier + " queued for " + processName + ".");
             }
             for (DOI doiRow : doiList) {
-                out.print(indent + DOI.SCHEME + doiRow.getDoi());
+                out.print(indent + doiRow.getDoi());
                 DSpaceObject dso = doiRow.getDSpaceObject();
                 if (null != dso) {
                     out.println(" (belongs to item with handle " + dso.getHandle() + ")");

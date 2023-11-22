@@ -69,34 +69,14 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
     static final String CFG_NAMESPACE_SEPARATOR = "identifier.doi.namespaceseparator";
     static final char SLASH = '/';
 
-    // Metadata field name elements
-    // TODO: move these to MetadataSchema or some such?
     public static final String MD_SCHEMA = "dc";
     public static final String DOI_ELEMENT = "identifier";
     public static final String DOI_QUALIFIER = "uri";
-    // The DOI is queued for registered with the service provider
-    public static final Integer TO_BE_REGISTERED = 1;
-    // The DOI is queued for reservation with the service provider
-    public static final Integer TO_BE_RESERVED = 2;
-    // The DOI has been registered online
-    public static final Integer IS_REGISTERED = 3;
-    // The DOI has been reserved online
-    public static final Integer IS_RESERVED = 4;
-    // The DOI is reserved and requires an updated metadata record to be sent to the service provider
-    public static final Integer UPDATE_RESERVED = 5;
-    // The DOI is registered and requires an updated metadata record to be sent to the service provider
-    public static final Integer UPDATE_REGISTERED = 6;
-    // The DOI metadata record should be updated before performing online registration
-    public static final Integer UPDATE_BEFORE_REGISTRATION = 7;
-    // The DOI will be deleted locally and marked as deleted in the DOI service provider
-    public static final Integer TO_BE_DELETED = 8;
-    // The DOI has been deleted and is no longer associated with an item
-    public static final Integer DELETED = 9;
-    // The DOI is created in the database and is waiting for either successful filter check on item install or
-    // manual intervention by an administrator to proceed to reservation or registration
-    public static final Integer PENDING = 10;
-    // The DOI is created in the database, but no more context is known
-    public static final Integer MINTED = 11;
+    // The DOI is queued for registered with the service prov
+
+    // Metadata field name elements
+    // TODO: move these to MetadataSchema or some such?
+
 
     public static final String[] statusText = {
         "UNKNOWN",                      // 0
@@ -290,18 +270,18 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
             throw new RuntimeException("Error in database conncetion.", ex);
         }
 
-        if (DELETED.equals(doiRow.getStatus()) ||
-            TO_BE_DELETED.equals(doiRow.getStatus())) {
+        if (doiRow.isDeleted() ||
+                doiRow.isToBeDeleted()) {
             throw new DOIIdentifierException("You tried to register a DOI that "
                 + "is marked as DELETED.", DOIIdentifierException.DOI_IS_DELETED);
         }
 
-        if (IS_REGISTERED.equals(doiRow.getStatus())) {
+        if (doiRow.isRegistered()) {
             return;
         }
 
         // change status of DOI
-        doiRow.setStatus(TO_BE_REGISTERED);
+        doiRow.setToBeRegistered();
         try {
             doiService.update(context, doiRow);
         } catch (SQLException sqle) {
@@ -356,7 +336,7 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
             return;
         }
 
-        doiRow.setStatus(TO_BE_RESERVED);
+        doiRow.setToBeReserved();
         try {
             doiService.update(context, doiRow);
         } catch (SQLException sqle) {
@@ -395,14 +375,14 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
         // get TableRow and ensure DOI belongs to dso regarding our db
         DOI doiRow = loadOrCreateDOI(context, dso, doi, filter);
 
-        if (DELETED.equals(doiRow.getStatus()) || TO_BE_DELETED.equals(doiRow.getStatus())) {
+        if (doiRow.isDeleted() || doiRow.isToBeDeleted()) {
             throw new DOIIdentifierException("You tried to reserve a DOI that "
                     + "is marked as DELETED.", DOIIdentifierException.DOI_IS_DELETED);
         }
 
         connector.reserveDOI(context, dso, doi);
 
-        doiRow.setStatus(IS_RESERVED);
+        doiRow.setIsReserved();
         doiService.update(context, doiRow);
     }
 
@@ -505,17 +485,17 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
             return;
         }
 
-        if (DELETED.equals(doiRow.getStatus()) || TO_BE_DELETED.equals(doiRow.getStatus())) {
+        if (doiRow.isDeleted() || doiRow.isToBeDeleted()) {
             throw new DOIIdentifierException("You tried to register a DOI that "
                     + "is marked as DELETED.", DOIIdentifierException.DOI_IS_DELETED);
         }
 
-        if (IS_REGISTERED.equals(doiRow.getStatus())) {
-            doiRow.setStatus(UPDATE_REGISTERED);
-        } else if (TO_BE_REGISTERED.equals(doiRow.getStatus())) {
-            doiRow.setStatus(UPDATE_BEFORE_REGISTRATION);
-        } else if (IS_RESERVED.equals(doiRow.getStatus())) {
-            doiRow.setStatus(UPDATE_RESERVED);
+        if (doiRow.isRegistered()) {
+            doiRow.setUpdateRegistered();
+        } else if (doiRow.isToBeRegesitered()) {
+            doiRow.setUpdateBeforeRegistration();
+        } else if (doiRow.isRegistered()) {
+            doiRow.setUpdateReserved();
         } else {
             return;
         }
@@ -563,7 +543,7 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
                     DOIIdentifierException.MISMATCH);
         }
 
-        if (DELETED.equals(doiRow.getStatus()) || TO_BE_DELETED.equals(doiRow.getStatus())) {
+        if (doiRow.isDeleted() || doiRow.isToBeDeleted()) {
             throw new DOIIdentifierException("You tried to update the metadata"
                     + " of a DOI that is marked as DELETED.",
                     DOIIdentifierException.DOI_IS_DELETED);
@@ -571,12 +551,12 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
 
         connector.updateMetadata(context, dso, doi);
 
-        if (UPDATE_REGISTERED.equals(doiRow.getStatus())) {
-            doiRow.setStatus(IS_REGISTERED);
-        } else if (UPDATE_BEFORE_REGISTRATION.equals(doiRow.getStatus())) {
-            doiRow.setStatus(TO_BE_REGISTERED);
-        } else if (UPDATE_RESERVED.equals(doiRow.getStatus())) {
-            doiRow.setStatus(IS_RESERVED);
+        if (doiRow.isUpdateRegistered()) {
+            doiRow.setIsRegistered();
+        } else if (doiRow.isIsUpdateBeforeRegistration()) {
+            doiRow.setToBeRegistered();
+        } else if (doiRow.isUpdateReserved()) {
+            doiRow.setIsReserved();
         }
 
         doiService.update(context, doiRow);
@@ -789,9 +769,9 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
         if (null != doiRow) {
             doiRow.setDSpaceObject(null);
             if (doiRow.getStatus() == null) {
-                doiRow.setStatus(DELETED);
+                doiRow.setDeleted();
             } else {
-                doiRow.setStatus(TO_BE_DELETED);
+                doiRow.setToBeDeleted();
             }
             try {
                 doiService.update(context, doiRow);
@@ -834,7 +814,7 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
         }
         connector.deleteDOI(context, doi);
 
-        doiRow.setStatus(DELETED);
+        doiRow.setDeleted();
         try {
             doiService.update(context, doiRow);
         } catch (SQLException sqle) {
@@ -1015,7 +995,7 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
         // prepare new doiRow
         doi.setDoi(doiIdentifier);
         doi.setDSpaceObject(dso);
-        doi.setStatus(MINTED);
+        doi.setMinted();
         try {
             doiService.update(context, doi);
         } catch (SQLException e) {
@@ -1162,4 +1142,26 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
         checkMintable(context, this.filter, dso);
     }
 
+    private static final Integer TO_BE_REGISTERED = 1;
+    // The DOI is queued for reservation with the service provider
+    private static final Integer TO_BE_RESERVED = 2;
+    // The DOI has been registered online
+    private static final Integer IS_REGISTERED = 3;
+    // The DOI has been reserved online
+    private static final Integer IS_RESERVED = 4;
+    // The DOI is reserved and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_RESERVED = 5;
+    // The DOI is registered and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_REGISTERED = 6;
+    // The DOI metadata record should be updated before performing online registration
+    private static final Integer UPDATE_BEFORE_REGISTRATION = 7;
+    // The DOI will be deleted locally and marked as deleted in the DOI service provider
+    private static final Integer TO_BE_DELETED = 8;
+    // The DOI has been deleted and is no longer associated with an item
+    private static final Integer DELETED = 9;
+    // The DOI is created in the database and is waiting for either successful filter check on item install or
+    // manual intervention by an administrator to proceed to reservation or registration
+    private static final Integer PENDING = 10;
+    // The DOI is created in the database, but no more context is known
+    private static final Integer MINTED = 11;
 }

@@ -57,6 +57,30 @@ public class ShowIdentifiersStep extends AbstractProcessingStep {
     @Autowired(required = true)
     protected ContentServiceFactory contentServiceFactory;
 
+    private static final Integer TO_BE_REGISTERED = 1;
+    // The DOI is queued for reservation with the service provider
+    private static final Integer TO_BE_RESERVED = 2;
+    // The DOI has been registered online
+    private static final Integer IS_REGISTERED = 3;
+    // The DOI has been reserved online
+    private static final Integer IS_RESERVED = 4;
+    // The DOI is reserved and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_RESERVED = 5;
+    // The DOI is registered and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_REGISTERED = 6;
+    // The DOI metadata record should be updated before performing online registration
+    private static final Integer UPDATE_BEFORE_REGISTRATION = 7;
+    // The DOI will be deleted locally and marked as deleted in the DOI service provider
+    private static final Integer TO_BE_DELETED = 8;
+    // The DOI has been deleted and is no longer associated with an item
+    private static final Integer DELETED = 9;
+    // The DOI is created in the database and is waiting for either successful filter check on item install or
+    // manual intervention by an administrator to proceed to reservation or registration
+    private static final Integer PENDING = 10;
+    // The DOI is created in the database, but no more context is known
+    private static final Integer MINTED = 11;
+
+
     /**
      * Override DataProcessing.getData, return data identifiers from getIdentifierData()
      *
@@ -100,8 +124,8 @@ public class ShowIdentifiersStep extends AbstractProcessingStep {
         String doiString = null;
         try {
             doi = IdentifierServiceFactory.getInstance().getDOIService().findDOIByDSpaceObject(context, obj.getItem());
-            if (doi != null && !DOIIdentifierProvider.MINTED.equals(doi.getStatus())
-                    && !DOIIdentifierProvider.DELETED.equals(doi.getStatus())) {
+            if (doi != null && !MINTED.equals(doi.getStatus())
+                    && !DELETED.equals(doi.getStatus())) {
                 doiString = doi.getDoi();
             }
         } catch (SQLException e) {

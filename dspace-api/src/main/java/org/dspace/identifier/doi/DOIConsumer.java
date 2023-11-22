@@ -105,7 +105,7 @@ public class DOIConsumer implements Consumer {
                 provider.mint(ctx, dso, workspaceFilter);
                 DOI newDoi = doiService.findDOIByDSpaceObject(ctx, dso);
                 if (newDoi != null) {
-                    newDoi.setStatus(DOIIdentifierProvider.PENDING);
+                    newDoi.setPending();
                     doiService.update(ctx, newDoi);
                 }
             } else {
@@ -119,14 +119,14 @@ public class DOIConsumer implements Consumer {
                     // Check the filter
                     provider.checkMintable(ctx, workspaceFilter, dso);
                     // If we made it here, the existing doi should be back to PENDING
-                    if (DOIIdentifierProvider.MINTED.equals(doi.getStatus())) {
-                        doi.setStatus(DOIIdentifierProvider.PENDING);
+                    if (doi.isMinted()) {
+                        doi.setPending();
                     }
                 } catch (IdentifierNotApplicableException e) {
                     // Set status to MINTED if configured to downgrade existing DOIs
                     if (configurationService
                             .getBooleanProperty("identifiers.submission.strip_pending_during_submission", true)) {
-                        doi.setStatus(DOIIdentifierProvider.MINTED);
+                        doi.setMinted();
                     }
                 }
                 doiService.update(ctx, doi);

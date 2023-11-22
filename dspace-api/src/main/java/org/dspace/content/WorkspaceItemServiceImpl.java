@@ -183,7 +183,7 @@ public class WorkspaceItemServiceImpl implements WorkspaceItemService {
                 // Look for a DOI and move it to PENDING
                 DOI doi = doiService.findDOIByDSpaceObject(context, item);
                 if (doi != null) {
-                    doi.setStatus(DOIIdentifierProvider.PENDING);
+                    doi.setPending();
                     doiService.update(context, doi);
                 }
             } catch (IdentifierException e) {

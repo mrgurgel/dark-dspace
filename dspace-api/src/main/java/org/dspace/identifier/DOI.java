@@ -32,6 +32,31 @@ import org.dspace.core.ReloadableEntity;
 @Table(name = "doi")
 public class DOI
     implements Identifier, ReloadableEntity<Integer> {
+
+    private static final Integer TO_BE_REGISTERED = 1;
+    // The DOI is queued for reservation with the service provider
+    private static final Integer TO_BE_RESERVED = 2;
+    // The DOI has been registered online
+    private static final Integer IS_REGISTERED = 3;
+    // The DOI has been reserved online
+    private static final Integer IS_RESERVED = 4;
+    // The DOI is reserved and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_RESERVED = 5;
+    // The DOI is registered and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_REGISTERED = 6;
+    // The DOI metadata record should be updated before performing online registration
+    private static final Integer UPDATE_BEFORE_REGISTRATION = 7;
+    // The DOI will be deleted locally and marked as deleted in the DOI service provider
+    private static final Integer TO_BE_DELETED = 8;
+    // The DOI has been deleted and is no longer associated with an item
+    private static final Integer DELETED = 9;
+    // The DOI is created in the database and is waiting for either successful filter check on item install or
+    // manual intervention by an administrator to proceed to reservation or registration
+    private static final Integer PENDING = 10;
+    // The DOI is created in the database, but no more context is known
+    private static final Integer MINTED = 11;
+
+
     public static final String SCHEME = "doi:";
 
     @Id
@@ -108,22 +133,92 @@ public class DOI
     }
 
     public void setToBeRegistered() {
-        setStatus(DOIIdentifierProvider.TO_BE_REGISTERED);
+        setStatus(DOI.TO_BE_REGISTERED);
     }
 
+
+    public void setToBeDeleted() {
+        setStatus(DOI.TO_BE_DELETED);
+    }
+
+
+
     public boolean isRegistered() {
-        return DOIIdentifierProvider.IS_REGISTERED.equals(getStatus());
+        return DOI.IS_REGISTERED.equals(getStatus());
     }
 
     public boolean isDeleted() {
-        return DOIIdentifierProvider.DELETED.equals(getStatus());
+        return DOI.DELETED.equals(getStatus());
     }
 
     public boolean isToBeDeleted() {
-        return DOIIdentifierProvider.TO_BE_DELETED.equals(getStatus());
+        return DOI.TO_BE_DELETED.equals(getStatus());
     }
 
     public void setRegistered() {
-        setStatus(DOIIdentifierProvider.IS_REGISTERED);
+        setStatus(DOI.IS_REGISTERED);
+    }
+
+    public void setUpdateRegistered() {
+        setStatus(DOI.UPDATE_REGISTERED);
+    }
+
+    public void setUpdateBeforeRegistration() {
+        setStatus(DOI.UPDATE_BEFORE_REGISTRATION);
+    }
+    public void isUpdateBeforeRegistration() {
+        setStatus(DOI.UPDATE_BEFORE_REGISTRATION);
+    }
+
+    public boolean isIsUpdateBeforeRegistration() {
+        return getStatus().equals(DOI.UPDATE_BEFORE_REGISTRATION);
+    }
+
+    public void setUpdateReserved() {
+        setStatus(DOI.UPDATE_RESERVED);
+    }
+    public boolean isUpdateReserved() {
+        return getStatus().equals(DOI.UPDATE_RESERVED);
+    }
+    public boolean isUpdateRegistered() {
+        return getStatus().equals(DOI.UPDATE_REGISTERED);
+    }
+
+
+
+    public void setIsRegistered() {
+        setStatus(DOI.IS_REGISTERED);
+    }
+
+    public void setIsReserved() {
+        setStatus(DOI.IS_RESERVED);
+    }
+
+    public void setDeleted() {
+        setStatus(DOI.DELETED);
+    }
+
+    public void setToBeReserved() {
+        setStatus(DOI.TO_BE_RESERVED);
+    }
+
+    public boolean isToBeReserved() {
+        return getStatus().equals(DOI.TO_BE_RESERVED);
+    }
+
+    public boolean isToBeRegesitered() {
+        return getStatus().equals(DOI.TO_BE_REGISTERED);
+    }
+
+    public void setMinted() {
+        setStatus(DOI.MINTED);
+    }
+
+    public boolean isMinted() {
+        return getStatus().equals(DOI.MINTED);
+    }
+
+    public void setPending() {
+        setStatus(DOI.PENDING);
     }
 }

@@ -70,6 +70,30 @@ public class DOIIdentifierProviderTest
      */
     private static final Logger log = LogManager.getLogger(DOIIdentifierProviderTest.class);
 
+    private static final Integer TO_BE_REGISTERED = 1;
+    // The DOI is queued for reservation with the service provider
+    private static final Integer TO_BE_RESERVED = 2;
+    // The DOI has been registered online
+    private static final Integer IS_REGISTERED = 3;
+    // The DOI has been reserved online
+    private static final Integer IS_RESERVED = 4;
+    // The DOI is reserved and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_RESERVED = 5;
+    // The DOI is registered and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_REGISTERED = 6;
+    // The DOI metadata record should be updated before performing online registration
+    private static final Integer UPDATE_BEFORE_REGISTRATION = 7;
+    // The DOI will be deleted locally and marked as deleted in the DOI service provider
+    private static final Integer TO_BE_DELETED = 8;
+    // The DOI has been deleted and is no longer associated with an item
+    private static final Integer DELETED = 9;
+    // The DOI is created in the database and is waiting for either successful filter check on item install or
+    // manual intervention by an administrator to proceed to reservation or registration
+    private static final Integer PENDING = 10;
+    // The DOI is created in the database, but no more context is known
+    private static final Integer MINTED = 11;
+
+
     private static final String PREFIX = "10.5072";
     private static final String NAMESPACE_SEPARATOR = "dspaceUnitTests-";
 
@@ -386,7 +410,7 @@ public class DOIIdentifierProviderTest
         throws SQLException, AuthorizeException, IOException,
         IllegalArgumentException, IdentifierException, WorkflowException, IllegalAccessException {
         Item item = newItem();
-        String doi = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, false);
+        String doi = this.createDOI(item, IS_REGISTERED, false);
 
         String retrievedDOI = provider.getDOIByObject(context, item);
 
@@ -399,7 +423,7 @@ public class DOIIdentifierProviderTest
         throws SQLException, AuthorizeException, IOException,
         IllegalArgumentException, IdentifierException, WorkflowException, IllegalAccessException {
         Item item = newItem();
-        String doi = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, false);
+        String doi = this.createDOI(item, IS_REGISTERED, false);
 
         String retrievedDOI = provider.lookup(context, (DSpaceObject) item);
 
@@ -412,7 +436,7 @@ public class DOIIdentifierProviderTest
         throws SQLException, AuthorizeException, IOException,
         IllegalArgumentException, IdentifierException, WorkflowException, IllegalAccessException {
         Item item = newItem();
-        String doi = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, false);
+        String doi = this.createDOI(item, IS_REGISTERED, false);
 
         DSpaceObject dso = provider.getObjectByDOI(context, doi);
 
@@ -427,7 +451,7 @@ public class DOIIdentifierProviderTest
         throws SQLException, AuthorizeException, IOException,
         IllegalArgumentException, IdentifierException, WorkflowException, IllegalAccessException {
         Item item = newItem();
-        String doi = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, false);
+        String doi = this.createDOI(item, IS_REGISTERED, false);
 
         DSpaceObject dso = provider.resolve(context, doi);
 
@@ -447,8 +471,8 @@ public class DOIIdentifierProviderTest
         IllegalAccessException {
         // add two DOIs.
         Item item = newItem();
-        String doi1 = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, true);
-        String doi2 = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, true);
+        String doi1 = this.createDOI(item, IS_REGISTERED, true);
+        String doi2 = this.createDOI(item, IS_REGISTERED, true);
 
         // remove one of it
         context.turnOffAuthorisationSystem();
@@ -618,7 +642,7 @@ public class DOIIdentifierProviderTest
         assumeNotNull(doiRow);
 
         assertTrue("Reservation of DOI did not set the corret DOI status.",
-                   DOIIdentifierProvider.TO_BE_RESERVED.equals(doiRow.getStatus()));
+                   TO_BE_RESERVED.equals(doiRow.getStatus()));
     }
 
     @Test
@@ -634,7 +658,7 @@ public class DOIIdentifierProviderTest
         assumeNotNull(doiRow);
 
         assertTrue("Registration of DOI did not set the corret DOI status.",
-                   DOIIdentifierProvider.TO_BE_REGISTERED.equals(doiRow.getStatus()));
+                   TO_BE_REGISTERED.equals(doiRow.getStatus()));
     }
 
     @Test
@@ -642,7 +666,7 @@ public class DOIIdentifierProviderTest
         throws SQLException, SQLException, AuthorizeException, IOException,
         IdentifierException, WorkflowException, IllegalAccessException {
         Item item = newItem();
-        String doi = this.createDOI(item, DOIIdentifierProvider.IS_RESERVED, true);
+        String doi = this.createDOI(item, IS_RESERVED, true);
 
         provider.register(context, item, doi);
 
@@ -650,7 +674,7 @@ public class DOIIdentifierProviderTest
         assumeNotNull(doiRow);
 
         assertTrue("Registration of DOI did not set the corret DOI status.",
-                   DOIIdentifierProvider.TO_BE_REGISTERED.equals(doiRow.getStatus()));
+                   TO_BE_REGISTERED.equals(doiRow.getStatus()));
     }
 
     @Test
@@ -673,7 +697,7 @@ public class DOIIdentifierProviderTest
         assertNotNull("Created DOI was not stored in database.", doiRow);
 
         assertTrue("Registration of DOI did not set the corret DOI status.",
-                   DOIIdentifierProvider.TO_BE_REGISTERED.equals(doiRow.getStatus()));
+                   TO_BE_REGISTERED.equals(doiRow.getStatus()));
     }
 
     @Test
@@ -681,8 +705,8 @@ public class DOIIdentifierProviderTest
         throws SQLException, AuthorizeException, IOException, IdentifierException, WorkflowException,
         IllegalAccessException {
         Item item = newItem();
-        String doi1 = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, true);
-        String doi2 = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, true);
+        String doi1 = this.createDOI(item, IS_REGISTERED, true);
+        String doi2 = this.createDOI(item, IS_REGISTERED, true);
 
         // remove one of it
         context.turnOffAuthorisationSystem();
@@ -710,12 +734,12 @@ public class DOIIdentifierProviderTest
         DOI doiRow1 = doiService.findByDoi(context, doi1.substring(DOI.SCHEME.length()));
         assumeNotNull(doiRow1);
         assertTrue("Status of deleted DOI was not set correctly.",
-                   DOIIdentifierProvider.TO_BE_DELETED.equals(doiRow1.getStatus()));
+                   TO_BE_DELETED.equals(doiRow1.getStatus()));
 
         DOI doiRow2 = doiService.findByDoi(context, doi2.substring(DOI.SCHEME.length()));
         assumeNotNull(doiRow2);
         assertTrue("While deleting a DOI the status of another changed.",
-                   DOIIdentifierProvider.IS_REGISTERED.equals(doiRow2.getStatus()));
+                   IS_REGISTERED.equals(doiRow2.getStatus()));
     }
 
     @Test
@@ -723,8 +747,8 @@ public class DOIIdentifierProviderTest
         throws SQLException, AuthorizeException, IOException, IdentifierException, IllegalAccessException,
         WorkflowException {
         Item item = newItem();
-        String doi1 = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, true);
-        String doi2 = this.createDOI(item, DOIIdentifierProvider.IS_REGISTERED, true);
+        String doi1 = this.createDOI(item, IS_REGISTERED, true);
+        String doi2 = this.createDOI(item, IS_REGISTERED, true);
 
         // remove one of it
         context.turnOffAuthorisationSystem();
@@ -752,12 +776,12 @@ public class DOIIdentifierProviderTest
         DOI doiRow1 = doiService.findByDoi(context, doi1.substring(DOI.SCHEME.length()));
         assumeNotNull(doiRow1);
         assertTrue("Status of deleted DOI was not set correctly.",
-                   DOIIdentifierProvider.TO_BE_DELETED.equals(doiRow1.getStatus()));
+                   TO_BE_DELETED.equals(doiRow1.getStatus()));
 
         DOI doiRow2 = doiService.findByDoi(context, doi1.substring(DOI.SCHEME.length()));
         assumeNotNull(doiRow2);
         assertTrue("Did not set the status of all deleted DOIs as expected.",
-                   DOIIdentifierProvider.TO_BE_DELETED.equals(doiRow2.getStatus()));
+                   TO_BE_DELETED.equals(doiRow2.getStatus()));
     }
 
     @Test
@@ -767,7 +791,7 @@ public class DOIIdentifierProviderTest
         context.turnOffAuthorisationSystem();
         Item item = newItem();
         // Mint a new DOI with PENDING status
-        String doi1 = this.createDOI(item, DOIIdentifierProvider.PENDING, true);
+        String doi1 = this.createDOI(item, PENDING, true);
         // Update metadata for the item.
         // This would normally shift status to UPDATE_REGISTERED, UPDATE_BEFORE_REGISTERING or UPDATE_RESERVED.
         // But if the DOI is just pending, it should return without changing anything.
@@ -776,7 +800,7 @@ public class DOIIdentifierProviderTest
         DOI doi = doiService.findDOIByDSpaceObject(context, item);
         // Ensure it is still PENDING
         assertEquals("Status of updated DOI did not remain PENDING",
-                DOIIdentifierProvider.PENDING, doi.getStatus());
+                PENDING, doi.getStatus());
         context.restoreAuthSystemState();
     }
 
@@ -788,7 +812,7 @@ public class DOIIdentifierProviderTest
         context.turnOffAuthorisationSystem();
         Item item1 = newItem();
         // Mint a new DOI with PENDING status
-        String doi1 = this.createDOI(item1, DOIIdentifierProvider.PENDING, true);
+        String doi1 = this.createDOI(item1, PENDING, true);
         // remove the item
         itemService.delete(context, item1);
         // Get the DOI from the service
@@ -827,7 +851,7 @@ public class DOIIdentifierProviderTest
         context.turnOffAuthorisationSystem();
         Item item = newItem();
         // Mint a new DOI with MINTED status
-        String doi1 = this.createDOI(item, DOIIdentifierProvider.MINTED, true);
+        String doi1 = this.createDOI(item, MINTED, true);
         // Update metadata for the item.
         // This would normally shift status to UPDATE_REGISTERED, UPDATE_BEFORE_REGISTERING or UPDATE_RESERVED.
         // But if the DOI is just minted, it should return without changing anything.
@@ -836,7 +860,7 @@ public class DOIIdentifierProviderTest
         DOI doi = doiService.findDOIByDSpaceObject(context, item);
         // Ensure it is still MINTED
         assertEquals("Status of updated DOI did not remain PENDING",
-                DOIIdentifierProvider.MINTED, doi.getStatus());
+                MINTED, doi.getStatus());
         context.restoreAuthSystemState();
     }
 
@@ -850,12 +874,12 @@ public class DOIIdentifierProviderTest
                 .getServiceManager().getServiceByName("always_true_filter", TrueFilter.class));
         DOI doi = doiService.findByDoi(context, mintedDoi.substring(DOI.SCHEME.length()));
         // This should be minted
-        assertEquals("DOI is not of 'minted' status", DOIIdentifierProvider.MINTED, doi.getStatus());
+        assertEquals("DOI is not of 'minted' status", MINTED, doi.getStatus());
         provider.updateMetadata(context, item, mintedDoi);
         DOI secondFind = doiService.findByDoi(context, mintedDoi.substring(DOI.SCHEME.length()));
         // After an update, this should still be minted
         assertEquals("DOI is not of 'minted' status",
-                DOIIdentifierProvider.MINTED, secondFind.getStatus());
+                MINTED, secondFind.getStatus());
 
     }
 

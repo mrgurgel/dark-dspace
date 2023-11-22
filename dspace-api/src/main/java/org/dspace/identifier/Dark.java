@@ -32,7 +32,7 @@ import static org.dspace.services.factory.DSpaceServicesFactory.getInstance;
 
 public class Dark extends DOI {
 
-    public static final String PREFIX_HYPERDRIVE = "dark:/{1}";
+    public static final String PREFIX_HYPERDRIVE = "dark:/{0}";
     public static final String ALLOWED_METADATA = "dc.contributor.author,dc.title,dc.identifier.uri,dc.date.issued";
     public static final int DELTA_FOR_DARK_STATUS = 100;
     protected ItemService itemService = ContentServiceFactory.getInstance().getItemService();
@@ -56,10 +56,10 @@ public class Dark extends DOI {
             String darkPid = MessageFormat.format(PREFIX_HYPERDRIVE, newPid);
             ContentServiceFactory.getInstance().getItemService()
                     .addMetadata(context, inProgressSubmission.getItem(), "dc", "identifier", "uri",
-                    null, darkPid);
+                            null, darkPid);
 
             DOIService doiService = IdentifierServiceFactory.getInstance().getDOIService();
-            Dark dark = new Dark(doiService.create(context),context);
+            Dark dark = new Dark(doiService.create(context), context);
             dark.setDoi(darkPid);
             dark.setDSpaceObject(inProgressSubmission.getItem());
             dark.setStatus(DarkStatus.TO_BE_REGISTERED.value);
@@ -82,45 +82,54 @@ public class Dark extends DOI {
         try {
             Item darkDSpaceItem = (Item) persistentDark.getDSpaceObject();
 
-            List<MetadataValue> metadata = darkDSpaceItem.getMetadata();
-            JsonObject darkBody = new JsonObject();
+            if (darkDSpaceItem.isWithdrawn()) {
 
-            List<String> allowedMetadata = Arrays.asList(ALLOWED_METADATA.split(","));
+                List<MetadataValue> metadata = darkDSpaceItem.getMetadata();
+                JsonObject darkBody = new JsonObject();
 
-            if (allowedMetadata.contains("dc.title")) {
-                extractMetadataValues(metadata, "dc", "title", null)
-                        .ifPresent(metadataValue -> darkBody.addProperty("title", metadataValue.getValue()));
+                List<String> allowedMetadata = Arrays.asList(ALLOWED_METADATA.split(","));
+                List<String> requestedMetadata = Arrays.asList(getInstance().getConfigurationService().getProperty("darkpid.send.metadata").split(","));
 
+                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.title")) {
+                    extractMetadataValues(metadata, "dc", "title", null)
+                            .ifPresent(metadataValue -> darkBody.addProperty("title", metadataValue.getValue()));
+                }
+
+                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.contributor.author")) {
+                    extractMetadataValues(metadata, "dc", "contributor", "author")
+                            .ifPresent(metadataValue -> darkBody.addProperty("author", metadataValue.getValue()));
+
+                }
+
+                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.date.issued")) {
+                    extractMetadataValues(metadata, "dc", "date", "issued")
+                            .ifPresent(metadataValue -> darkBody.addProperty("year", metadataValue.getValue()));
+
+                }
+
+                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.identifier.uri")) {
+                    extractMetadataValues(metadata, "dc", "uri", null)
+                            .ifPresent(metadataValue -> darkBody.addProperty("url", metadataValue.getValue()));
+                }
+
+                JsonObject darkPostContainer = new JsonObject();
+                darkPostContainer.addProperty("payload", darkBody.getAsString());
+
+                String uri = MessageFormat.format(
+                        "/core/set/{0}/{1}",
+                        getInstance().getConfigurationService().getProperty("darkpid.repo.prefix"),
+                        getDarkPidMatcher(persistentDark.getDoi()).group(2)
+                );
+                sendDarkPost(uri, darkPostContainer.getAsString());
             }
-
-            if (allowedMetadata.contains("dc.contributor.author")) {
-                extractMetadataValues(metadata, "dc", "contributor", "author")
-                        .ifPresent(metadataValue -> darkBody.addProperty("author", metadataValue.getValue()));
-
-            }
-
-            if (allowedMetadata.contains("dc.date.issued")) {
-                extractMetadataValues(metadata, "dc", "date", "issued")
-                        .ifPresent(metadataValue -> darkBody.addProperty("year", metadataValue.getValue()));
-
-            }
-
-            extractMetadataValues(metadata, "dc", "uri", null)
-                    .ifPresent(metadataValue -> darkBody.addProperty("url", metadataValue.getValue()));
-
-            JsonObject darkPostContainer = new JsonObject();
-            darkPostContainer.addProperty("payload", darkBody.getAsString());
-
-            String uri = MessageFormat.format(
-                    "/core/set/{0}/{1}",
-                    getInstance().getConfigurationService().getProperty("darkpid.repo.prefix"),
-                    getDarkPidMatcher(persistentDark.getDoi()).group(2)
-            );
-            sendDarkPost(uri, darkPostContainer.getAsString());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean hasToAddMetadata(List<String> allowedMetadata, List<String> requestedMetadata, String desiredMetadata) {
+        return allowedMetadata.contains(desiredMetadata) && requestedMetadata.contains(desiredMetadata);
     }
 
     public void sendUri(DOI persistentDark) {
@@ -138,7 +147,7 @@ public class Dark extends DOI {
                     getDarkPidMatcher(persistentDark.getDoi()).group(2)
             );
 
-            sendDarkPost(uri, darkBody.getAsString());
+            sendDarkPost(uri, darkBody.toString());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -243,6 +252,89 @@ public class Dark extends DOI {
     public void setStatus(Integer status) {
         persistentDark.setStatus(status);
     }
+
+    @Override
+    public void setToBeDeleted() {
+        setStatus(DarkStatus.TO_BE_DELETED.value);
+    }
+
+    @Override
+    public void setUpdateRegistered() {
+        setStatus(DarkStatus.UPDATE_REGISTERED.value);
+    }
+
+    @Override
+    public void setUpdateBeforeRegistration() {
+        setStatus(DarkStatus.UPDATE_BEFORE_REGISTRATION.value);
+    }
+
+    @Override
+    public boolean isIsUpdateBeforeRegistration() {
+        return getStatus().equals(DarkStatus.UPDATE_BEFORE_REGISTRATION);
+    }
+
+    @Override
+    public void setUpdateReserved() {
+        setStatus(DarkStatus.UPDATE_RESERVED.value);
+    }
+
+    @Override
+    public boolean isUpdateReserved() {
+        return getStatus().equals(DarkStatus.UPDATE_RESERVED);
+
+    }
+
+    @Override
+    public boolean isUpdateRegistered() {
+        return getStatus().equals(DarkStatus.UPDATE_REGISTERED);
+    }
+
+    @Override
+    public void setIsRegistered() {
+        setStatus(DarkStatus.IS_REGISTERED.value);
+    }
+
+    @Override
+    public void setIsReserved() {
+        setStatus(DarkStatus.IS_RESERVED.value);
+    }
+
+    @Override
+    public void setDeleted() {
+        setStatus(DarkStatus.DELETED.value);
+    }
+
+    @Override
+    public void setToBeReserved() {
+        setStatus(DarkStatus.TO_BE_RESERVED.value);
+    }
+
+    @Override
+    public boolean isToBeReserved() {
+        return getStatus().equals(DarkStatus.TO_BE_RESERVED);
+    }
+
+    @Override
+    public boolean isToBeRegesitered() {
+        return getStatus().equals(DarkStatus.TO_BE_REGISTERED.value);
+    }
+
+    @Override
+    public void setMinted() {
+        setStatus(DarkStatus.MINTED.value);
+    }
+
+    @Override
+    public boolean isMinted() {
+        return getStatus().equals(DarkStatus.PENDING.value);
+    }
+
+    @Override
+    public void setPending() {
+        setStatus(DarkStatus.PENDING.value);
+    }
+
+
 
     public enum DarkStatus {
         TO_BE_REGISTERED(101),

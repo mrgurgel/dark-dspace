@@ -172,10 +172,10 @@ public class IdentifierRestRepositoryIT extends AbstractControllerIntegrationTes
         // The DOI should not be null
         assertNotNull(doi);
         // The DOI status should be TO_BE_REGISTERED
-        Assert.assertEquals(DOIIdentifierProvider.TO_BE_REGISTERED, doi.getStatus());
+        Assert.assertEquals(TO_BE_REGISTERED, doi.getStatus());
 
         // Now, set the DOI status back to pending and update
-        doi.setStatus(DOIIdentifierProvider.PENDING);
+        doi.setStatus(PENDING);
         doiService.update(context, doi);
 
         // Do another POST, again this should return 201 CREATED as we shift the DOI from PENDING to TO_BE_REGISTERED
@@ -220,7 +220,7 @@ public class IdentifierRestRepositoryIT extends AbstractControllerIntegrationTes
 
         // Set specific string and state we expect to get back from a REST request
         doi.setDoi(doiString);
-        doi.setStatus(DOIIdentifierProvider.IS_REGISTERED);
+        doi.setStatus(IS_REGISTERED);
         doiService.update(context, doi);
 
         context.restoreAuthSystemState();
@@ -247,7 +247,7 @@ public class IdentifierRestRepositoryIT extends AbstractControllerIntegrationTes
                 .andExpect(jsonPath("$.identifiers[0].value").value(doiService.DOIToExternalForm(doiString)))
                 .andExpect(jsonPath("$.identifiers[0].identifierType").value("doi"))
                 .andExpect(jsonPath("$.identifiers[0].identifierStatus")
-                        .value(DOIIdentifierProvider.statusText[DOIIdentifierProvider.IS_REGISTERED]));
+                        .value(DOIIdentifierProvider.statusText[IS_REGISTERED]));
 
         // Expect a valid Handle with the value, type we expect
         getClient(token).perform(get("/api/core/items/" +
@@ -292,7 +292,7 @@ public class IdentifierRestRepositoryIT extends AbstractControllerIntegrationTes
 
         // Set specific string and state we expect to get back from a REST request
         doi.setDoi(doiString);
-        doi.setStatus(DOIIdentifierProvider.IS_REGISTERED);
+        doi.setStatus(IS_REGISTERED);
         doiService.update(context, doi);
 
         context.restoreAuthSystemState();
@@ -319,7 +319,7 @@ public class IdentifierRestRepositoryIT extends AbstractControllerIntegrationTes
                 .andExpect(jsonPath("$._embedded.identifiers[0].value").value(doiService.DOIToExternalForm(doiString)))
                 .andExpect(jsonPath("$._embedded.identifiers[0].identifierType").value("doi"))
                 .andExpect(jsonPath("$._embedded.identifiers[0].identifierStatus")
-                        .value(DOIIdentifierProvider.statusText[DOIIdentifierProvider.IS_REGISTERED]));
+                        .value(DOIIdentifierProvider.statusText[IS_REGISTERED]));
 
         // Expect a valid Handle with the value, type we expect
         getClient(token).perform(get("/api/pid/identifiers/search/findByItem").queryParam("uuid",
@@ -331,4 +331,28 @@ public class IdentifierRestRepositoryIT extends AbstractControllerIntegrationTes
                 .andExpect(jsonPath("$._embedded.identifiers[1].identifierType").value("handle"));
 
     }
+
+    private static final Integer TO_BE_REGISTERED = 1;
+    // The DOI is queued for reservation with the service provider
+    private static final Integer TO_BE_RESERVED = 2;
+    // The DOI has been registered online
+    private static final Integer IS_REGISTERED = 3;
+    // The DOI has been reserved online
+    private static final Integer IS_RESERVED = 4;
+    // The DOI is reserved and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_RESERVED = 5;
+    // The DOI is registered and requires an updated metadata record to be sent to the service provider
+    private static final Integer UPDATE_REGISTERED = 6;
+    // The DOI metadata record should be updated before performing online registration
+    private static final Integer UPDATE_BEFORE_REGISTRATION = 7;
+    // The DOI will be deleted locally and marked as deleted in the DOI service provider
+    private static final Integer TO_BE_DELETED = 8;
+    // The DOI has been deleted and is no longer associated with an item
+    private static final Integer DELETED = 9;
+    // The DOI is created in the database and is waiting for either successful filter check on item install or
+    // manual intervention by an administrator to proceed to reservation or registration
+    private static final Integer PENDING = 10;
+    // The DOI is created in the database, but no more context is known
+    private static final Integer MINTED = 11;
+
 }
