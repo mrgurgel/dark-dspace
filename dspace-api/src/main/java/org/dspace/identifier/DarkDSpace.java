@@ -92,9 +92,17 @@ public class DarkDSpace extends DOI {
     }
 
 
-    public void registerData() {
+    public void registerData(Context context) {
         fullFillDarkBody(persistentDark);
         sendUri(persistentDark);
+        setIsRegistered();
+        DOIService doiService = IdentifierServiceFactory.getInstance().getDOIService();
+        try {
+            doiService.update(context, this);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void fullFillDarkBody(DOI persistentDark) {
@@ -162,7 +170,7 @@ public class DarkDSpace extends DOI {
             String baseUrl = getInstance()
                     .getConfigurationService().getProperty("darkpid.base.url");
 
-            Dark.newInstance(repoPrefix, baseUrl).sendExternalUrl(externalUrl, persistentDark.getDoi());
+            Dark.newInstance(baseUrl, repoPrefix).sendExternalUrl(externalUrl, persistentDark.getDoi());
 
         } catch (Exception e) {
             throw new RuntimeException(e);

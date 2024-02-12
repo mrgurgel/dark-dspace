@@ -1,6 +1,10 @@
 package org.dspace.identifier;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
 import java.text.MessageFormat;
+import java.util.Map;
 
 public class DarkDataVO {
 
@@ -56,12 +60,8 @@ public class DarkDataVO {
     }
 
     public String externalUrlAsJson() {
-        return MessageFormat.format( "{\n" +
-                "    \"external_url\": \"{0}\"\n" +
-                "  }\n" +
-                "}", externalUrl);
+        return new Gson().toJson(Map.of("external_url", externalUrl)).toString();
     }
-
 
     public DarkDataVO withExternalUrl(String externalUrl) {
         this.externalUrl = externalUrl;

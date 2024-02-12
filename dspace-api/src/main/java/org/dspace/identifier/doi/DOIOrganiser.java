@@ -277,21 +277,20 @@ public class DOIOrganiser {
                 List<DOI> dois = doiService
                         .getDOIsByStatus(context, Arrays.asList(TO_BE_REGISTERED));
                 if (dois.isEmpty()) {
-                    System.err.println("There are no objects in the database "
-                            + "that could be registered.");
+                    System.out.println("There are no DOI objects in the database that could be registered.");
                 }
                 for (DOI doi : dois) {
                     organiser.register(doi);
                     context.uncacheEntity(doi);
                 }
 
-
                 List<DOI> darks = doiService
                         .getDOIsByStatus(context, Arrays.asList(TO_BE_REGISTERED + START_RANGE_DARK_STATUS));
                 if (darks.isEmpty()) {
-                    System.err.println("There are no objects in the database that could be registered.");
+                    System.out.println("There are no dark objects in the database that could be registered.");
                 }
                 for (DOI doi : darks) {
+                    System.out.println("Registering dark: " + doi.getDoi());
                     organiser.register(doi);
                     context.uncacheEntity(doi);
                 }
@@ -465,7 +464,7 @@ public class DOIOrganiser {
         try {
             boolean isInRangeOfDarkStatus = doiRow.getStatus() > START_RANGE_DARK_STATUS;
             if(isInRangeOfDarkStatus) {
-                new DarkDSpace(doiRow).registerData();
+                new DarkDSpace(doiRow).registerData(context);
             } else {
                 provider.registerOnline(context, dso, DOI.SCHEME + doiRow.getDoi(), filter);
             }
@@ -535,7 +534,7 @@ public class DOIOrganiser {
      */
     public void register(DOI doiRow) throws SQLException, DOIIdentifierException {
         if (doiRow.getStatus() > START_RANGE_DARK_STATUS) {
-            new DarkDSpace(doiRow).registerData();
+            new DarkDSpace(doiRow).registerData(context);
         } else {
             register(doiRow, this.filter);
         }

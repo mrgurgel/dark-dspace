@@ -90,7 +90,7 @@ public class Dark {
 
         String uri = MessageFormat.format("/core/set/{0}/{1}",
                 _projectPrefix, getDarkPidMatcher(darkId).group(2));
-        sendDarkPost(uri, postData);
+        sendDarkPost(_baseUrl + "/" + uri, postData);
 
     }
 }
