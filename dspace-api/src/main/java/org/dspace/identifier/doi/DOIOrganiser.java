@@ -42,7 +42,7 @@ import org.dspace.handle.factory.HandleServiceFactory;
 import org.dspace.handle.service.HandleService;
 import org.dspace.identifier.DOI;
 import org.dspace.identifier.DOIIdentifierProvider;
-import org.dspace.identifier.Dark;
+import org.dspace.identifier.DarkDSpace;
 import org.dspace.identifier.IdentifierException;
 import org.dspace.identifier.factory.IdentifierServiceFactory;
 import org.dspace.identifier.service.DOIService;
@@ -465,7 +465,7 @@ public class DOIOrganiser {
         try {
             boolean isInRangeOfDarkStatus = doiRow.getStatus() > START_RANGE_DARK_STATUS;
             if(isInRangeOfDarkStatus) {
-                new Dark(doiRow,  context).registerData();
+                new DarkDSpace(doiRow).registerData();
             } else {
                 provider.registerOnline(context, dso, DOI.SCHEME + doiRow.getDoi(), filter);
             }
@@ -535,7 +535,7 @@ public class DOIOrganiser {
      */
     public void register(DOI doiRow) throws SQLException, DOIIdentifierException {
         if (doiRow.getStatus() > START_RANGE_DARK_STATUS) {
-            new Dark(doiRow, context).registerData();
+            new DarkDSpace(doiRow).registerData();
         } else {
             register(doiRow, this.filter);
         }
