@@ -10,6 +10,8 @@ import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
+import org.dspace.identifier.factory.IdentifierServiceFactory;
+import org.dspace.identifier.service.DOIService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,9 +45,10 @@ public class DarkDSpace extends DOI {
      * @param doi
      */
     public DarkDSpace(DOI doi) {
-        this.persistentDark = doi;
         inicializeDarkComponent();
+        this.persistentDark = doi;
     }
+
 
     /**
      * Create and persist a new DOI/Dark record
@@ -54,9 +57,9 @@ public class DarkDSpace extends DOI {
      */
     public DarkDSpace(InProgressSubmission inProgressSubmission, Context context) {
         try {
+            inicializeDarkComponent();
             DOI dark = saveDoiAsDark(inProgressSubmission, context);
             this.persistentDark = dark;
-            inicializeDarkComponent();
         } catch (Exception e) {
             LOGGER.error(e);
         }
@@ -68,21 +71,24 @@ public class DarkDSpace extends DOI {
         String baseUrl = getInstance()
                 .getConfigurationService().getProperty("darkpid.base.url");
 
-        darkComponent = Dark.newInstance(repoPrefix, baseUrl);
+        darkComponent = Dark.newInstance(baseUrl, repoPrefix);
     }
 
     private DOI saveDoiAsDark(InProgressSubmission inProgressSubmission, Context context) throws SQLException {
         String darkPid = darkComponent.createNewPid();
 
+        DOIService doiService = IdentifierServiceFactory.getInstance().getDOIService();
+
         ContentServiceFactory.getInstance().getItemService()
                 .addMetadata(context, inProgressSubmission.getItem(), "dc", "identifier", "uri",
                         null, darkPid);
 
-        DOI dark = new DOI();
+        DOI dark = doiService.create(context);
         dark.setDoi(darkPid);
         dark.setDSpaceObject(inProgressSubmission.getItem());
         dark.setStatus(DarkStatus.TO_BE_REGISTERED.value);
-        return dark;
+
+        return new DarkDSpace(dark);
     }
 
 

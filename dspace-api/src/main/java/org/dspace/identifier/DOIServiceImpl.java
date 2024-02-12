@@ -107,9 +107,14 @@ public class DOIServiceImpl implements DOIService {
             return identifier;
         }
 
+
         Matcher matcher = DOI_URL_PATTERN.matcher(identifier);
         if (matcher.matches()) { // various old URL forms
             return resolver + matcher.group(DOI_URL_PATTERN_PATH_GROUP);
+        }
+
+        if(identifier.contains("dark")) {
+            return identifier;
         }
 
         throw new IdentifierException(identifier + "does not seem to be a DOI.");
@@ -153,6 +158,10 @@ public class DOIServiceImpl implements DOIService {
         Matcher matcher = DOI_URL_PATTERN.matcher(identifier);
         if (matcher.matches()) { // various old URL forms
             return DOI.SCHEME + matcher.group(DOI_URL_PATTERN_PATH_GROUP).substring(1);
+        }
+
+        if(identifier.contains("dark")) {
+            return identifier;
         }
 
         throw new DOIIdentifierException(identifier + "does not seem to be a DOI.",

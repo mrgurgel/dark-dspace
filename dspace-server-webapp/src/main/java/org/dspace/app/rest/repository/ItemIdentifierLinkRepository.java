@@ -67,7 +67,11 @@ public class ItemIdentifierLinkRepository extends AbstractDSpaceRestRepository i
         DOI doi = doiService.findDOIByDSpaceObject(context, item);
         String handle = HandleServiceFactory.getInstance().getHandleService().findHandle(context, item);
         try {
-            if (doi != null) {
+            if(doi != null && doi.getDoi().contains("dark")) {
+                identifierRestList.add(new IdentifierRest(
+                        doi.getDoi(), "dark", DOIIdentifierProvider.statusText[doi.getStatus() - 100]));
+            }
+            else if (doi != null) {
                 String doiUrl = doiService.DOIToExternalForm(doi.getDoi());
                 identifierRestList.add(new IdentifierRest(
                         doiUrl, "doi", DOIIdentifierProvider.statusText[doi.getStatus()]));

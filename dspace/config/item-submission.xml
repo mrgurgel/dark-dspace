@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE item-submission
-  SYSTEM "item-submission.dtd">
+        SYSTEM "item-submission.dtd">
 <item-submission>
    <submission-map>
       <name-map collection-handle="default" submission-name="td"/>
    </submission-map>
    <step-definitions>
+
+      <step-definition id="collection">
+         <heading></heading>
+         <processing-class>org.dspace.app.rest.submit.step.CollectionStep</processing-class>
+         <type>collection</type>
+         <scope visibility="hidden" visibilityOutside="hidden">submission</scope>
+      </step-definition>
+
       <step-definition mandatory="true" id="tdpage1">
          <heading>submit.progressbar.describe.step1</heading>
          <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
@@ -31,16 +39,6 @@
          <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
          <type>submission-form</type>
       </step-definition>
-      <step-definition mandatory="true" id="tdpage6">
-         <heading>submit.progressbar.describe.step6</heading>
-         <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
-         <type>submission-form</type>
-      </step-definition>
-      <step-definition mandatory="true" id="tdpage7">
-         <heading>submit.progressbar.describe.step7</heading>
-         <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
-         <type>submission-form</type>
-      </step-definition>
       <step-definition id="upload">
          <heading>submit.progressbar.upload</heading>
          <processing-class>org.dspace.app.rest.submit.step.UploadStep</processing-class>
@@ -58,19 +56,13 @@
          <type>identifiers</type>
          <scope visibilityOutside="read-only">submission</scope>
       </step-definition>
-
-
    </step-definitions>
    <submission-definitions>
       <submission-process name="td">
-         
+         <step id="collection"/>
          <step id="tdpage1"/>
-         <step id="tdpage2"/>
-         <step id="tdpage3"/>
          <step id="tdpage4"/>
          <step id="tdpage5"/>
-         <step id="tdpage6"/>
-         <step id="tdpage7"/>
          <step id="identifiers"/>
          <step id="upload"/>
          <step id="license"/>
