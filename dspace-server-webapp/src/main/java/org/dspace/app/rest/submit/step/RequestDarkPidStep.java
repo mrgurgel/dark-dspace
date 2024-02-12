@@ -9,7 +9,7 @@ import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.util.SubmissionStepConfig;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.core.Context;
-import org.dspace.identifier.DarkDSpace;
+import org.dspace.identifier.Dark;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.services.model.Request;
 
@@ -34,7 +34,7 @@ public class RequestDarkPidStep extends AbstractProcessingStep {
                 .ifPresentOrElse(metadataValue -> dataIdentifiers.addIdentifier("otherIdentifiers",
                                 "dArk PID " + metadataValue.getValue(), null),
                         () -> dataIdentifiers.addIdentifier("otherIdentifiers", "dArk PID " +
-                                new DarkDSpace(inProgressSubmission, getContext()).getDoi(), null));
+                                Dark.createNewDarkPid(getContext(), inProgressSubmission).getDoi(), null));
 
 
         return dataIdentifiers;

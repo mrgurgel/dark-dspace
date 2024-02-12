@@ -959,7 +959,7 @@ public class DOIIdentifierProvider extends FilteredIdentifierProvider {
                         // Before we return this, check the filter
                         checkMintable(context, filter, dso);
                         if(doi.getStatus() >= 100) {
-                            return new DarkDSpace(doi);
+                            return new Dark(doi, context);
                         }
                         return doi;
                     } else {
