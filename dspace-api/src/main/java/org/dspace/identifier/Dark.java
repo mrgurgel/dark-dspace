@@ -48,6 +48,7 @@ public class Dark {
 
     private static JsonObject sendDarkPost(String url, String body) {
         try {
+            System.out.println("Data to be sent: " + body);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(new URI(url))
                     .timeout(Duration.of(10, ChronoUnit.SECONDS))
@@ -66,15 +67,9 @@ public class Dark {
     }
 
     public void sendPayload(DarkDataVO darkDataVO, String darkId) {
-
-        String postData = new StringBuilder().append("{ ")
-                .append("payload {")
-                    .append(darkDataVO.bodyAsJson()).append("}")
-                .toString();
-
         String uri = MessageFormat.format("/core/set/{0}/{1}",
                 _projectPrefix, getDarkPidMatcher(darkId).group(2));
-        sendDarkPost(uri, postData);
+        sendDarkPost(_baseUrl + "/" + uri, darkDataVO.bodyAsJson());
     }
 
     private static Matcher getDarkPidMatcher(String dark) {

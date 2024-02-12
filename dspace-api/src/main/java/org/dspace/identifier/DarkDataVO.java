@@ -1,19 +1,17 @@
 package org.dspace.identifier;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
-import java.text.MessageFormat;
 import java.util.Map;
 
 public class DarkDataVO {
 
 
-    private String author;
-    private String title;
-    private String year;
-    private String url;
-    private String externalUrl;
+    private String author = "";
+    private String title = "";
+    private String year = "";
+    private String url = "";
+    private String externalUrl = "";
 
     protected String darkId;
 
@@ -46,17 +44,16 @@ public class DarkDataVO {
         return this;
     }
 
-
     public String bodyAsJson() {
-        return MessageFormat.format( "{\n" +
-                "  \"payload\": {\n" +
-                "    \"author\": \"{0}\",\n" +
-                "    \"title\": \"{1}\",\n" +
-                "    \"year\": \"{2}\",\n" +
-                "    \"url\": \"{3}\",\n" +
-                "    \"darkId\": \"{4}\"\n" +
-                "  }\n" +
-                "}", author, title, year, url, darkId);
+        return new Gson().toJson(
+            Map.of("payload",   Map.of(
+                        "author", author,
+                        "title", title,
+                        "year", year,
+                        "url", url,
+                        "darkId", darkId
+                    ))
+        ).toString();
     }
 
     public String externalUrlAsJson() {

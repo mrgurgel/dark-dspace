@@ -93,8 +93,8 @@ public class DarkDSpace extends DOI {
 
 
     public void registerData(Context context) {
-        fullFillDarkBody(persistentDark);
         sendUri(persistentDark);
+        prepareAndSendPayload(persistentDark);
         setIsRegistered();
         DOIService doiService = IdentifierServiceFactory.getInstance().getDOIService();
         try {
@@ -105,48 +105,45 @@ public class DarkDSpace extends DOI {
 
     }
 
-    public void fullFillDarkBody(DOI persistentDark) {
+    public void prepareAndSendPayload(DOI persistentDark) {
         try {
             Item darkDSpaceItem = (Item) persistentDark.getDSpaceObject();
 
-            if (darkDSpaceItem.isWithdrawn()) {
+            List<MetadataValue> metadata = darkDSpaceItem.getMetadata();
 
-                List<MetadataValue> metadata = darkDSpaceItem.getMetadata();
+            List<String> allowedMetadata = Arrays.asList(ALLOWED_METADATA.split(","));
+            List<String> requestedMetadata = Arrays.asList(getInstance().getConfigurationService().getProperty("darkpid.send.metadata").split(","));
 
-                List<String> allowedMetadata = Arrays.asList(ALLOWED_METADATA.split(","));
-                List<String> requestedMetadata = Arrays.asList(getInstance().getConfigurationService().getProperty("darkpid.send.metadata").split(","));
+            DarkDataVO darkDataVO = new DarkDataVO();
+            darkDataVO.withDarkId(persistentDark.getDoi());
 
-                DarkDataVO darkDataVO = new DarkDataVO();
-                darkDataVO.withDarkId(persistentDark.getDoi());
-
-                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.title")) {
-
-                    extractMetadataValues(metadata, "dc", "title", null)
-                            .ifPresent(metadataValue -> darkDataVO.withTitle(metadataValue.getValue()));
-                }
-
-                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.contributor.author")) {
-
-                    extractMetadataValues(metadata, "dc", "contributor", "author")
-                            .ifPresent(metadataValue -> darkDataVO.withAutor(metadataValue.getValue()));
-
-                }
-
-                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.date.issued")) {
-
-                    extractMetadataValues(metadata, "dc", "date", "issued")
-                            .ifPresent(metadataValue -> darkDataVO.withYear(metadataValue.getValue()));
-
-                }
-
-                if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.identifier.uri")) {
-
-                    extractMetadataValues(metadata, "dc", "uri", null)
-                            .ifPresent(metadataValue -> darkDataVO.withUrl(metadataValue.getValue()));
-                }
-
-                darkComponent.sendPayload(darkDataVO, persistentDark.getDoi());
+            if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.title")) {
+                System.out.println("Entrou 1");
+                extractMetadataValues(metadata, "dc", "title", null)
+                        .ifPresent(metadataValue -> darkDataVO.withTitle(metadataValue.getValue()));
             }
+
+            if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.contributor.author")) {
+
+                extractMetadataValues(metadata, "dc", "contributor", "author")
+                        .ifPresent(metadataValue -> darkDataVO.withAutor(metadataValue.getValue()));
+
+            }
+
+            if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.date.issued")) {
+
+                extractMetadataValues(metadata, "dc", "date", "issued")
+                        .ifPresent(metadataValue -> darkDataVO.withYear(metadataValue.getValue()));
+
+            }
+
+            if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.identifier.uri")) {
+
+                extractMetadataValues(metadata, "dc", "uri", null)
+                        .ifPresent(metadataValue -> darkDataVO.withUrl(metadataValue.getValue()));
+            }
+
+            darkComponent.sendPayload(darkDataVO, persistentDark.getDoi());
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -178,10 +175,19 @@ public class DarkDSpace extends DOI {
     }
 
     private static Optional<MetadataValue> extractMetadataValues(List<MetadataValue> metadata, String schema, String element, Object qualifier) {
-        return metadata.stream().filter(metadataValue ->
-                metadataValue.getMetadataField().getMetadataSchema().equals(schema) &&
+
+        System.out.println(metadata.get(2).getMetadataField().getMetadataSchema().getName());
+        System.out.println(metadata.get(2).getMetadataField().getElement());
+        System.out.println(metadata.get(2).getMetadataField().getQualifier());
+
+        System.out.println("oi");
+
+        Optional<MetadataValue> first = metadata.stream().filter(metadataValue ->
+                metadataValue.getMetadataField().getMetadataSchema().getName().equals(schema) &&
                         metadataValue.getMetadataField().getElement().equals(element) &&
-                        metadataValue.getMetadataField().getQualifier().equals(qualifier)).findFirst();
+                        metadataValue.getMetadataField().getQualifier() == null ?
+                            metadataValue.getMetadataField().getQualifier() == qualifier : metadataValue.getMetadataField().getQualifier().equals(qualifier)).findFirst();
+        return first;
     }
 
     private static JsonObject sendDarkPost(String uri, String body) throws URISyntaxException, IOException, InterruptedException {
