@@ -118,7 +118,6 @@ public class DarkDSpace extends DOI {
             darkDataVO.withDarkId(persistentDark.getDoi());
 
             if (hasToAddMetadata(allowedMetadata, requestedMetadata, "dc.title")) {
-                System.out.println("Entrou 1");
                 extractMetadataValues(metadata, "dc", "title", null)
                         .ifPresent(metadataValue -> darkDataVO.withTitle(metadataValue.getValue()));
             }
@@ -175,13 +174,6 @@ public class DarkDSpace extends DOI {
     }
 
     private static Optional<MetadataValue> extractMetadataValues(List<MetadataValue> metadata, String schema, String element, Object qualifier) {
-
-        System.out.println(metadata.get(2).getMetadataField().getMetadataSchema().getName());
-        System.out.println(metadata.get(2).getMetadataField().getElement());
-        System.out.println(metadata.get(2).getMetadataField().getQualifier());
-
-        System.out.println("oi");
-
         Optional<MetadataValue> first = metadata.stream().filter(metadataValue ->
                 metadataValue.getMetadataField().getMetadataSchema().getName().equals(schema) &&
                         metadataValue.getMetadataField().getElement().equals(element) &&
